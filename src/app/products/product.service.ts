@@ -1,0 +1,31 @@
+import { Injectable } from "@angular/core";
+import { IProduct } from "./product";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { Observable, throwError } from "rxjs";
+import { catchError, tap } from "rxjs/operators";
+
+@Injectable({
+    providedIn:'root'
+})
+export class ProductService {
+  private productUrl = 'api/products/products.json';
+  constructor (private http: HttpClient ){
+    
+  }
+  getProducts():Observable<IProduct[]>{
+
+        return this.http.get<IProduct[]>(this.productUrl).pipe(
+          //tap(dedomena =>console.log('All Dedomena einai :'+ JSON.stringify(dedomena))),
+          catchError(this.handleError)
+        );
+    }
+    private handleError(err:HttpErrorResponse){
+      let errorMessage;
+      if(err.error instanceof ErrorEvent){
+        errorMessage = `AnError hAS OCCCURED ${err.error.message}`
+      } else {
+        errorMessage = `Server returned with code ${err.status}, Error message : ${err.message}`;
+      }
+        return throwError(errorMessage);
+    }
+}
